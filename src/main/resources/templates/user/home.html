@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecuador Comparte – Resiliencia &amp; Esperanza</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/png" th:href="@{logo-ecuador}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+   <a th:href="@{/}" class="navbar-brand">
+    <img src="/other/imgs/logo-ecuador.png" alt="Logo Ecuador Comparte" class="logo-img">
+    </a>
+
+    <ul class="navbar-links">
+        <li><a th:href="@{/}" class="active">Inicio</a></li>
+        <li><a th:href="@{#noticias}">Noticias</a></li>
+        <li><a th:href="@{#testimonios}">Testimonios</a></li>
+        <li><a th:href="@{#contact}">Contacto</a></li>
+    </ul>
+
+</nav>
+
+<!-- HERO -->
+<section class="hero-modern">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-container">
+
+        <!-- TEXTO -->
+        <div class="hero-left">
+
+            <div class="hero-badge">
+                RESILIENCIA Y ESPERANZA
+            </div>
+
+            <h1>
+                Transformamos vidas
+                a través de
+                oportunidades
+            </h1>
+
+            <p>
+                Construimos puentes hacia un futuro digno,
+                empoderando a las comunidades ecuatorianas con
+                herramientas para el desarrollo sostenible.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#contact" class="btn-primary-custom">
+                    Contactanos
+                </a>
+
+                <a href="#noticias" class="btn-secondary-custom">
+                    Conoce más
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- IMAGEN -->
+        <div class="hero-right">
+
+            <img src="https://thumbs.dreamstime.com/z/gente-en-ecuador-105749411.jpg"
+                 alt="Ayuda comunitaria Ecuador">
+
+           <!-- <div class="impact-card">
+
+                <span>IMPACTO REAL</span>
+
+                <h3>+500 Familias</h3>
+
+                <p>apoyadas este trimestre</p>
+
+            </div>-->
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- MISIÓN Y VISIÓN -->
+<section class="mission-vision">
+    <div class="mv-container">
+
+        <div class="mv-box">
+            <h2>Nuestra Misión</h2>
+            <p>
+                Erradicar la brecha de desigualdad mediante programas de capacitación técnica y apoyo emocional, permitiendo que cada ecuatoriano sea el arquitecto de su propio progreso.
+            </p>
+        </div>
+
+        <div class="mv-divider"></div>
+
+        <div class="mv-box">
+            <h2>Nuestra Visión</h2>
+            <p>
+                Ser el referente nacional de transformación social, donde la innovación y la humanidad converjan para crear una nación próspera y resiliente.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- PROGRAMAS -->
+<section class="programs-section">
+    <div class="programs-container">
+
+        <div class="program-card">
+            <div class="program-icon icon-blue">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+            </div>
+
+            <h3>Apoyo social</h3>
+
+            <p>
+                Programas de asistencia integral para familias en situaciones de vulnerabilidad extrema.
+            </p>
+        </div>
+
+        <div class="program-card">
+            <div class="program-icon icon-gold">
+                <i class="fa-solid fa-rocket"></i>
+            </div>
+
+            <h3>Emprendimiento</h3>
+
+            <p>
+                Incubación de ideas de negocio locales con mentoría experta y capital semilla.
+            </p>
+        </div>
+
+        <div class="program-card">
+            <div class="program-icon icon-red">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Oportunidades</h3>
+
+            <p>
+                Bolsa de empleo y vinculación directa con el sector privado nacional e internacional.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+
+
+<!-- NOTICIAS -->
+<section class="section" id="noticias">
+    <div class="container">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <h2 class="section-title">Últimas Noticias</h2>
+                <p class="section-sub" style="margin:0;">Historias de impacto que inspiran resiliencia en todo el Ecuador.</p>
+            </div>
+            <a th:href="@{/news}" class="btn btn-outline btn-sm">Ver todas <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div class="cards-grid" th:if="${not #lists.isEmpty(publishedNews)}">
+            <div class="card" th:each="news : ${publishedNews}">
+                <img th:src="${news.imageUrl}" th:alt="${news.title}" class="card-img"
+                     onerror="this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800'">
+                <div class="card-body">
+                    <span class="card-tag">Publicado</span>
+                    <h3 th:text="${news.title}">Título de la noticia</h3>
+                    <p th:text="${news.summary}">Resumen de la noticia.</p>
+                </div>
+                <div class="card-footer">
+                    <span><i class="fa-solid fa-user" style="margin-right:.3rem;"></i><span th:text="${news.author}">Autor</span></span>
+                    <a th:href="@{/news/{id}(id=${news.id})}" class="btn btn-sm btn-navy">Leer más</a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(publishedNews)}"
+             style="text-align:center;padding:3rem;color:#94a3b8;">
+            <i class="fa-regular fa-newspaper" style="font-size:2.5rem;margin-bottom:1rem;display:block;"></i>
+            No hay noticias publicadas aún.
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="section section-alt" id="testimonios">
+    <div class="container">
+        <h2 class="section-title">Testimonios</h2>
+        <p class="section-sub">Personas que forman parte de nuestra red de resiliencia y esperanza.</p>
+
+        <div class="testimonials-grid" th:if="${not #lists.isEmpty(testimonials)}">
+            <div class="testimony-card" th:each="t : ${testimonials}">
+                <img th:src="${t.photoUrl}" th:alt="${t.name}" class="testimony-avatar"
+                     onerror="this.src='https://ui-avatars.com/api/?name=A+E&background=0d1f4e&color=fff'">
+                <p class="testimony-name" th:text="${t.name}">Nombre</p>
+                <p style="color:#94a3b8;font-size:.82rem;">Miembro de la comunidad</p>
+                <div class="testimony-social">
+                    <a th:if="${t.instagramUrl}" th:href="${t.instagramUrl}" target="_blank" title="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a th:if="${t.facebookUrl}" th:href="${t.facebookUrl}" target="_blank" title="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(testimonials)}"
+             style="text-align:center;padding:3rem;color:#94a3b8;">
+            <i class="fa-regular fa-users" style="font-size:2.5rem;margin-bottom:1rem;display:block;"></i>
+            No hay miembros de la comunidad aún.
+        </div>
+    </div>
+</section>
+
+<!-- FLASH MESSAGE -->
+<div th:if="${successMessage}" style="background:#dcfce7;color:#166534;padding:1rem 2rem;text-align:center;font-weight:600;border-bottom:1px solid #86efac;">
+    <i class="fa-solid fa-check-circle"></i>
+    <span th:text="${successMessage}"></span>
+</div>
+
+<!-- CONTACTO -->
+<section class="contact-section" id="contact">
+    <div class="contact-grid">
+        <div class="contact-info">
+            <h2>¿Cómo podemos ayudarte?</h2>
+            <p>Estamos aquí para escucharte y acompañarte. Déjanos tus datos y uno de nuestros colaboradores se comunicará contigo muy pronto.</p>
+            <div style="margin-top:2rem;display:flex;flex-direction:column;gap:1rem;">
+                <div style="display:flex;align-items:center;gap:.75rem;opacity:.85;">
+                    <i class="fa-solid fa-envelope" style="font-size:1.1rem;"></i>
+                    <span>contacto@ecuadorcomparte.org</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:.75rem;opacity:.85;">
+                    <i class="fa-solid fa-phone" style="font-size:1.1rem;"></i>
+                    <span>+593 99 000 0000</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:.75rem;opacity:.85;">
+                    <i class="fa-solid fa-location-dot" style="font-size:1.1rem;"></i>
+                    <span>Ecuador Comparte</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form">
+            <h3 style="color:#0d1f4e;font-weight:800;margin-bottom:1.5rem;">Envíanos un mensaje</h3>
+            <form th:action="@{/contact}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" name="name" class="form-control" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" name="email" class="form-control" placeholder="tu@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" name="phone" class="form-control" placeholder="+593 99 000 0000" required>
+                </div>
+                <div class="form-group">
+                    <label>Motivo de contacto</label>
+                    <select name="purpose" class="form-control" required>
+                        <option value="" disabled selected>Selecciona una opción</option>
+                        <option th:each="p : ${purposes}" th:value="${p}" th:text="${p.visualName}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-navy" style="width:100%;justify-content:center;padding:.85rem;">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar mensaje
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand">Ecuador Comparte</div>
+            <p class="footer-desc">Fundación comprometida con la resiliencia, la esperanza y la transformación comunitaria en el Ecuador.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Navegación</h4>
+            <ul>
+                <li><a th:href="@{/}">Inicio</a></li>
+                <li><a href="#noticias">Noticias</a></li>
+                <li><a href="#testimonios">Testimonios</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Legal</h4>
+            <ul>
+                <li><a href="#">Política de Privacidad</a></li>
+                <li><a href="#">Términos de Servicio</a></li>
+                <li><a href="#">Informe de Transparencia</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        © 2026 Ecuador Comparte Brayan Matta, Diego Acosta, Laura Torres.
+    </div>
+</footer>
+
+
+</body>
+</html>

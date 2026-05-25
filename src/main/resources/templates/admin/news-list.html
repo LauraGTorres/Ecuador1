@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Noticias – Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>Admin Portal</span>
+            <small>Foundation Management</small>
+        </div>
+        <ul class="sidebar-nav">
+            <li>
+                <a th:href="@{/admin/requests}">
+                    <i class="fa-solid fa-list-check icon"></i> Solicitudes
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/testimonials}">
+                    <i class="fa-solid fa-quote-right icon"></i> Testimonios
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/news}" class="active">
+                    <i class="fa-solid fa-newspaper icon"></i> Noticias
+                </a>
+            </li>
+        </ul>
+        <a th:href="@{/admin/news/new}" class="btn-sidebar-new">
+            <i class="fa-solid fa-plus"></i> Nueva Entrada
+        </a>
+        <div class="sidebar-bottom">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" style="background:none;border:none;width:100%;cursor:pointer;text-align:left;">
+                    <span style="display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;color:#475569;font-weight:500;font-size:.9rem;border-radius:12px;cursor:pointer;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                    </span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+        <div class="admin-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+                <h1>Gestión de Noticias</h1>
+                <p>Gestiona la voz de la fundación. Crea, publica y administra historias de impacto.</p>
+            </div>
+            <a th:href="@{/admin/news/new}" class="btn btn-navy">
+                <i class="fa-solid fa-plus"></i> Nueva Entrada
+            </a>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <!-- STATS -->
+        <div class="stats-grid" style="margin-bottom:1.5rem;">
+            <div class="stat-card">
+                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
+                    <i class="fa-regular fa-eye" style="color:#3b82f6;"></i>
+                    <span style="font-size:.78rem;color:#94a3b8;text-transform:uppercase;">Total Lecturas</span>
+                </div>
+                <div class="stat-num">—</div>
+                <div class="stat-label" style="color:#94a3b8;font-size:.8rem;">No disponible</div>
+            </div>
+            <div class="stat-card">
+                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
+                    <i class="fa-solid fa-pen" style="color:#f5a623;"></i>
+                    <span style="font-size:.78rem;color:#94a3b8;text-transform:uppercase;">Borradores</span>
+                </div>
+                <div class="stat-num" th:text="${#lists.size(newsList.?[state.name() == 'PURPOSE_DRAFT'])}">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
+                    <i class="fa-solid fa-circle-play" style="color:#0d1f4e;"></i>
+                    <span style="font-size:.78rem;color:#94a3b8;text-transform:uppercase;">Publicadas</span>
+                </div>
+                <div class="stat-num" th:text="${#lists.size(newsList.?[state.name() == 'PURPOSE_PUBLISHED'])}">0</div>
+                <div class="stat-label">Historias</div>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Artículos Recientes</h3>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>TÍTULO DE NOTICIA</th>
+                    <th>ESTADO</th>
+                    <th>FECHA</th>
+                    <th>AUTOR</th>
+                    <th>ACCIONES</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="news : ${newsList}">
+                    <td>
+                        <div style="display:flex;align-items:center;gap:.75rem;">
+                            <img th:src="${news.imageUrl}" th:alt="${news.title}"
+                                 onerror="this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=100'"
+                                 style="width:42px;height:42px;border-radius:10px;object-fit:cover;flex-shrink:0;">
+                            <span style="font-weight:600;" th:text="${#strings.abbreviate(news.title, 45)}">Título</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${news.state.name() == 'PURPOSE_PUBLISHED'} ? 'badge-published' : 'badge-draft'"
+                              th:text="${news.state.visualName}">Estado</span>
+                    </td>
+                    <td style="font-size:.85rem;color:#64748b;" th:text="${#temporals.format(news.publicationDate, 'dd MMM, yyyy')}">Fecha</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:.5rem;">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;">
+                                <span th:text="${#strings.substring(news.author,0,1)}">A</span>
+                            </div>
+                            <span style="font-size:.88rem;" th:text="${news.author}">Autor</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:.5rem;">
+                            <a th:href="@{/admin/news/edit/{id}(id=${news.id})}" class="btn btn-sm btn-outline">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <form th:action="@{/admin/news/delete/{id}(id=${news.id})}" method="post" onsubmit="return confirm('¿Eliminar esta noticia?')">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(newsList)}">
+                    <td colspan="5" style="text-align:center;padding:3rem;color:#94a3b8;">No hay noticias registradas.</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span th:text="'Mostrando ' + ${#lists.size(newsList)} + ' de ' + ${#lists.size(newsList)} + ' entradas'"></span>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noticias – Ecuador Comparte</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/}" class="navbar-brand">
+        <img src="/other/imgs/logo-ecuador.png" alt="Logo Ecuador Comparte" class="logo-img">
+    </a>
+    <ul class="navbar-links">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/news}" class="active">Noticias</a></li>
+        <li><a th:href="@{/#testimonios}">Testimonios</a></li>
+        <li><a th:href="@{/contact}">Contacto</a></li>
+    </ul>
+</nav>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Todas las Noticias</h2>
+        <p class="section-sub">Historias de impacto que inspiran resiliencia en todo el Ecuador.</p>
+
+        <div class="cards-grid">
+            <div class="card" th:each="news : ${newsList}">
+                <img th:src="${news.imageUrl}" th:alt="${news.title}" class="card-img"
+                     onerror="this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800'">
+                <div class="card-body">
+                    <span class="card-tag">Publicado</span>
+                    <h3 th:text="${news.title}">Título</h3>
+                    <p th:text="${news.summary}">Resumen</p>
+                </div>
+                <div class="card-footer">
+                    <span th:text="${news.author}">Autor</span>
+                    <a th:href="@{/news/{id}(id=${news.id})}" class="btn btn-sm btn-navy">Leer más</a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(newsList)}" style="text-align:center;padding:4rem;color:#94a3b8;">
+            No hay noticias publicadas aún.
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-bottom">© 2024 FUNDACIÓN ECUADOR COMPARTE . RESILIENCIA &amp; ESPERANZA.</div>
+</footer>
+</body>
+</html>

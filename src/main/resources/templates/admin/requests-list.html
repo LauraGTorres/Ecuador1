@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Solicitudes – Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>Admin Portal</span>
+            <small>Foundation Management</small>
+        </div>
+        <ul class="sidebar-nav">
+            <li>
+                <a th:href="@{/admin/requests}" class="active">
+                    <i class="fa-solid fa-list-check icon"></i> Solicitudes
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/testimonials}">
+                    <i class="fa-solid fa-quote-right icon"></i> Testimonios
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/news}">
+                    <i class="fa-solid fa-newspaper icon"></i> Noticias
+                </a>
+            </li>
+        </ul>
+        <!--<a th:href="@{/admin/requests}" class="btn-sidebar-new">
+            <i class="fa-solid fa-plus"></i> Nueva Entrada
+        </a>-->
+        <div class="sidebar-bottom">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" style="background:none;border:none;width:100%;cursor:pointer;">
+                    <a style="pointer-events:none;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                    </a>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+        <div class="admin-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+                <h1>Gestión de Solicitudes</h1>
+                <p>Revisa y gestiona las solicitudes de contacto de la comunidad.</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div style="width:40px;height:40px;background:#0d1f4e;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;" sec:authentication="name">JD</div>
+                <div>
+                    <div style="font-weight:700;font-size:.9rem;">Perfil Admin</div>
+                    <div style="font-size:.78rem;color:#94a3b8;">Administrador del Sistema</div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <!-- TABLE -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Solicitudes de Contacto</h3>
+                <span style="font-size:.85rem;color:#94a3b8;" th:text="'Total: ' + ${#lists.size(requests)} + ' solicitudes'"></span>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>NOMBRE</th>
+                    <th>INFORMACIÓN DE CONTACTO</th>
+                    <th>PROPÓSITO</th>
+                    <th>FECHA</th>
+                    <th>ACCIONES</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="req : ${requests}">
+                    <td>
+                        <div style="display:flex;align-items:center;gap:.75rem;">
+                            <div th:style="'width:38px;height:38px;border-radius:50%;background:' + (${req.purpose.name() == 'SERVICE'} ? '#fef3c7' : (${req.purpose.name() == 'BUILDING_PROGRAM'} ? '#dbeafe' : '#fce7f3')) + ';display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#0d1f4e;flex-shrink:0;'"
+                                 th:text="${#strings.substring(req.name,0,1) + (#strings.contains(req.name,' ') ? #strings.substring(req.name,#strings.indexOf(req.name,' ')+1,#strings.indexOf(req.name,' ')+2) : '')}">ML</div>
+                            <div>
+                                <div style="font-weight:600;" th:text="${req.name}">Nombre</div>
+                                <div style="font-size:.78rem;color:#94a3b8;" th:text="'Ref: #AE-' + req.id">Ref</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:text="${req.email}" style="font-size:.9rem;"></div>
+                        <div th:text="${req.phone}" style="font-size:.82rem;color:#94a3b8;"></div>
+                    </td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${req.purpose.name() == 'SERVICE'} ? 'badge-service' : (${req.purpose.name() == 'BUILDING_PROGRAM'} ? 'badge-building' : 'badge-shows')"
+                              th:text="${req.purpose.visualName}">Propósito</span>
+                    </td>
+                    <td style="font-size:.85rem;color:#64748b;" th:text="${#temporals.format(req.createdAt, 'dd MMM, yyyy')}">Fecha</td>
+                    <td>
+                        <div style="display:flex;gap:.5rem;">
+                            <button class="btn btn-sm" style="background:#f1f5f9;color:#0d1f4e;" title="Ver"
+                                    onclick="openModal(this)"
+                                    th:data-id="${req.id}"
+                                    th:data-name="${req.name}"
+                                    th:data-email="${req.email}"
+                                    th:data-phone="${req.phone}"
+                                    th:data-purpose="${req.purpose.visualName}"
+                                    th:data-date="${#temporals.format(req.createdAt, 'dd MMM, yyyy HH:mm')}">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                            <form th:action="@{/admin/requests/delete/{id}(id=${req.id})}" method="post" onsubmit="return confirm('¿Eliminar esta solicitud?')">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(requests)}">
+                    <td colspan="5" style="text-align:center;padding:3rem;color:#94a3b8;">No hay solicitudes registradas.</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span th:text="'Mostrando ' + ${#lists.size(requests)} + ' solicitudes'"></span>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid" style="margin-top:1.5rem;">
+            <div class="stat-card" style="background:#0d1f4e;color:#fff;">
+                <div style="font-size:.78rem;text-transform:uppercase;opacity:.7;margin-bottom:.5rem;">SOLICITUDES DE HOY</div>
+                <div class="stat-num" style="color:#fff;" th:text="${#lists.size(requests)}">0</div>
+                <div style="font-size:.8rem;opacity:.6;">+12% desde ayer</div>
+            </div>
+            <div class="stat-card">
+                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;">
+                    <i class="fa-solid fa-file" style="color:#f5a623;"></i>
+                    <span style="font-size:.78rem;text-transform:uppercase;color:#94a3b8;">PENDIENTE REVISIÓN</span>
+                </div>
+                <div class="stat-num" th:text="${#lists.size(requests)}">82</div>
+                <div class="stat-label">Archivos</div>
+            </div>
+            <!--<div class="stat-card">
+                <div style="font-size:.78rem;text-transform:uppercase;color:#94a3b8;margin-bottom:.75rem;">TASA DE RESOLUCIÓN</div>
+                <div class="stat-num">78%</div>
+                <div class="stat-label" style="color:#22c55e;font-weight:700;">Alta Eficiencia</div>
+            </div>-->
+        </div>
+    </main>
+</div><!-- MODAL VER SOLICITUD -->
+<div id="requestModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:2rem;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative;">
+        <button onclick="closeModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;color:#94a3b8;cursor:pointer;">&times;</button>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
+            <div id="modal-avatar" style="width:48px;height:48px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#0d1f4e;flex-shrink:0;"></div>
+            <div>
+                <div id="modal-name" style="font-weight:700;font-size:1.1rem;color:#0d1f4e;"></div>
+                <div id="modal-ref" style="font-size:.78rem;color:#94a3b8;"></div>
+            </div>
+        </div>
+        <div style="display:grid;gap:1rem;">
+            <div style="background:#f8fafc;border-radius:10px;padding:1rem;">
+                <div style="font-size:.72rem;text-transform:uppercase;color:#94a3b8;margin-bottom:.25rem;">Correo electrónico</div>
+                <div id="modal-email" style="font-weight:600;color:#1e293b;"></div>
+            </div>
+            <div style="background:#f8fafc;border-radius:10px;padding:1rem;">
+                <div style="font-size:.72rem;text-transform:uppercase;color:#94a3b8;margin-bottom:.25rem;">Teléfono</div>
+                <div id="modal-phone" style="font-weight:600;color:#1e293b;"></div>
+            </div>
+            <div style="background:#f8fafc;border-radius:10px;padding:1rem;">
+                <div style="font-size:.72rem;text-transform:uppercase;color:#94a3b8;margin-bottom:.25rem;">Propósito</div>
+                <div id="modal-purpose" style="font-weight:600;color:#1e293b;"></div>
+            </div>
+            <div style="background:#f8fafc;border-radius:10px;padding:1rem;">
+                <div style="font-size:.72rem;text-transform:uppercase;color:#94a3b8;margin-bottom:.25rem;">Fecha de solicitud</div>
+                <div id="modal-date" style="font-weight:600;color:#1e293b;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(btn) {
+        const id      = btn.dataset.id;
+        const name    = btn.dataset.name;
+        const email   = btn.dataset.email;
+        const phone   = btn.dataset.phone;
+        const purpose = btn.dataset.purpose;
+        const date    = btn.dataset.date;
+
+        const initials = name.split(' ').slice(0,2).map(w => w[0].toUpperCase()).join('');
+        document.getElementById('modal-avatar').textContent  = initials;
+        document.getElementById('modal-name').textContent    = name;
+        document.getElementById('modal-ref').textContent     = 'Ref: #AE-' + id;
+        document.getElementById('modal-email').textContent   = email;
+        document.getElementById('modal-phone').textContent   = phone;
+        document.getElementById('modal-purpose').textContent = purpose;
+        document.getElementById('modal-date').textContent    = date;
+
+        const modal = document.getElementById('requestModal');
+        modal.style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('requestModal').style.display = 'none';
+    }
+    document.getElementById('requestModal').addEventListener('click', function(e){
+        if (e.target === this) closeModal();
+    });
+</script>
+
+</body>
+</html>
