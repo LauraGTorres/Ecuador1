@@ -46,7 +46,7 @@ El sistema permite publicar noticias, mostrar testimonios de miembros de la comu
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/LauraGTorres/Ecuador1
+git clone https://github.com/LauraGTorres/Ecuador1.git
 cd EcuadorComparte
 ```
 
